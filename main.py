@@ -1,25 +1,36 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
+from services.vector_store import upsert_task, query_context
 from typing import List, Any
 
-app = FastAPI(
-    title="SmartCheck AI Engine",
-    description="Motor RAG de priorización para RedCheck",
-    version="1.0.0"
-)
+app = FastAPI()
 
-class TaskPayload(BaseModel):
+class TaskHistoryPayload(BaseModel):
+    taskId: str
     userId: str
-    tasks: List[Any] 
+    taskDescription: str
+    timeSpentHours: float
+    status: str
 
-@app.get("/health")
-async def health_check():
-    return {"status": "ok", "service": "smartcheck-ai-engine"}
+class QueryPayload(BaseModel):
+    userId: str
+    query: str
 
-@app.post("/api/v1/prioritize")
-async def prioritize_tasks(payload: TaskPayload):
-    return {
-        "nivelRiesgo": "BAJO",
-        "mensajeApoyo": "Mock inicial. El contenedor está recibiendo la carga.",
-        "planDeHoy": payload.tasks
-    }
+@app.post("/api/v1/history")
+async def save_history(payload: TaskHistoryPayload, bg_tasks: BackgroundTasks):
+    context_text = f"La tarea '{payload.taskDescription}' tomó {payload.timeSpentHours} horas y su estado es {payload.status}."
+    
+    # Lo ejecutamos en segundo plano para no bloquear la respuesta de la API
+    bg_tasks.add_task(
+        upsert_task, 
+        payload.taskId, 
+        payload.userId, 
+        context_text, 
+        {"timeSpent": payload.timeSpentHours, "status": payload.status}
+    )
+    return {"status": "procesando embedding en background"}
+
+@app.post("/api/v1/query")
+async def search_memory(payload: QueryPayload):
+    docs = query_context(payload.userId, payload.query)
+    return {"contexto_recuperado": docs}
