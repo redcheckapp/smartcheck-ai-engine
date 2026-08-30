@@ -1,0 +1,23 @@
+# Control de versiones
+.git
+.gitignore
+
+# Entornos virtuales y secretos
+venv/
+.venv/
+.env
+.env.*
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Configuración de Docker
+Dockerfile
+.dockerignore
+
+# IDEs y SO
+.vscode/
+.idea/
+.DS_Store
