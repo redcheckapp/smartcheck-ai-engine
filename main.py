@@ -34,7 +34,7 @@ async def prioritize_tasks(payload: TaskPayload):
         tasks=payload.tasks,
         user_analytics=payload.userAnalytics,
         rag_context=rag_context,
-        user_profile=payload.userProfile # <-- Inyección dinámica
+        user_profile=payload.userProfile
     )
     
     return plan_json
