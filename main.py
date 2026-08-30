@@ -1,36 +1,39 @@
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from pydantic import BaseModel
-from services.vector_store import upsert_task, query_context
-from typing import List, Any
+from typing import List, Dict, Any
+from services.vector_store import query_context
+from services.llm_engine import generate_prioritized_plan
 
-app = FastAPI()
+app = FastAPI(
+    title="SmartCheck AI Engine",
+    version="1.0.0"
+)
 
-class TaskHistoryPayload(BaseModel):
-    taskId: str
+# Actualizamos el contrato para recibir analíticas del usuario desde Spring Boot
+class TaskPayload(BaseModel):
     userId: str
-    taskDescription: str
-    timeSpentHours: float
-    status: str
+    userAnalytics: Dict[str, int] # ej: {"Ciberseguridad": 17, "Backend": 50}
+    tasks: List[Any]
 
-class QueryPayload(BaseModel):
-    userId: str
-    query: str
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
-@app.post("/api/v1/history")
-async def save_history(payload: TaskHistoryPayload, bg_tasks: BackgroundTasks):
-    context_text = f"La tarea '{payload.taskDescription}' tomó {payload.timeSpentHours} horas y su estado es {payload.status}."
+@app.post("/api/v1/prioritize")
+async def prioritize_tasks(payload: TaskPayload):
+    # 1. Extraemos el contexto de todas las tareas como una sola consulta RAG
+    # Para afinarlo, podrías iterar, pero una consulta general con los títulos suele bastar.
+    nombres_tareas = ", ".join([t.get("titulo", "") for t in payload.tasks])
     
-    # Lo ejecutamos en segundo plano para no bloquear la respuesta de la API
-    bg_tasks.add_task(
-        upsert_task, 
-        payload.taskId, 
-        payload.userId, 
-        context_text, 
-        {"timeSpent": payload.timeSpentHours, "status": payload.status}
+    docs = query_context(payload.userId, f"Rendimiento previo relacionado con: {nombres_tareas}")
+    rag_context = "\n".join(docs) if docs else ""
+    
+    # 2. Inyectamos tareas, analíticas y memoria en el motor LLM
+    plan_json = generate_prioritized_plan(
+        tasks=payload.tasks,
+        user_analytics=payload.userAnalytics,
+        rag_context=rag_context
     )
-    return {"status": "procesando embedding en background"}
-
-@app.post("/api/v1/query")
-async def search_memory(payload: QueryPayload):
-    docs = query_context(payload.userId, payload.query)
-    return {"contexto_recuperado": docs}
+    
+    # 3. Retornamos la respuesta estructurada a Spring Boot
+    return plan_json

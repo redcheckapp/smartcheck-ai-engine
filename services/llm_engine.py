@@ -1,9 +1,8 @@
-import os
+import json
 import google.generativeai as genai
 from schemas import PrioritizationResponse
-import json
+import os
 
-# Usamos gemini-1.5-flash o pro para soportar tipado fuerte con response_schema
 model = genai.GenerativeModel(
     model_name="models/gemini-1.5-flash",
     generation_config={
@@ -13,23 +12,29 @@ model = genai.GenerativeModel(
     }
 )
 
-def generate_prioritized_plan(tasks: list[dict], rag_context: str) -> dict:
-    """Envía el contexto y las tareas a Gemini forzando el JSON de salida."""
+def generate_prioritized_plan(tasks: list[dict], user_analytics: dict, rag_context: str) -> dict:
+    """Ensambla el prompt con las 4 dimensiones y lanza la consulta al LLM."""
     
     prompt = f"""
-    Eres SmartCheck, un motor de inteligencia artificial especializado en productividad.
-    Tu objetivo es analizar la lista de tareas pendientes y devolver un plan óptimo.
+    Eres SmartCheck, un motor de inteligencia artificial especializado en productividad y gestión del tiempo.
+    Tu objetivo es analizar la lista de tareas pendientes del usuario y devolver un plan de ejecución óptimo.
     
-    Contexto histórico del rendimiento del usuario:
-    {rag_context if rag_context else "Sin datos históricos relevantes."}
-    
-    Tareas pendientes a evaluar:
+    Para determinar el 'ordenDefinido', debes evaluar y combinar internamente estas 4 dimensiones:
+    1. ESFUERZO COGNITIVO: Analiza la complejidad técnica o mental del título. Tareas densas deben ir primero.
+    2. DEPENDENCIAS IMPLÍCITAS: Busca bloqueos lógicos (ej. Configurar la base de datos va antes que programar la API).
+    3. IMPACTO (Matriz Eisenhower): Palabras clave como 'Examen', 'Defensa', 'Producción' o 'Despliegue' multiplican la prioridad.
+    4. BALANCE DE ASIGNATURAS: El usuario tiende a retrasarse en asignaturas con menor progreso. Empuja hacia arriba las tareas de asignaturas más abandonadas.
+
+    --- CONTEXTO ANALÍTICO ---
+    Progreso actual por asignatura:
+    {json.dumps(user_analytics, ensure_ascii=False)}
+
+    Memoria Histórica de Rendimiento (Contexto RAG):
+    {rag_context if rag_context else "Sin historial específico previo."}
+
+    --- TAREAS PENDIENTES ---
     {json.dumps(tasks, ensure_ascii=False)}
-    
-    Debes evaluar URGENCIA, ESFUERZO COGNITIVO e IMPACTO para decidir el 'ordenDefinido'.
     """
     
     response = model.generate_content(prompt)
-    
-    # El motor garantiza que response.text es un string JSON que cumple el esquema exacto
     return json.loads(response.text)
