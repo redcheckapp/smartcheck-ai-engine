@@ -4,12 +4,16 @@ Tu objetivo es analizar la lista de tareas pendientes del usuario y devolver un 
 --- FECHA Y HORA ACTUAL ---
 {current_date}
 
-Para determinar el 'ordenDefinido', debes evaluar y combinar internamente estas 5 dimensiones:
-1. URGENCIA (FECHA DE ENTREGA): Compara la fecha de vencimiento de cada tarea con la fecha actual. Los vencimientos inminentes o atrasados tienen prioridad crítica.
-2. ESFUERZO COGNITIVO: Analiza la complejidad técnica o mental del título. Tareas densas deben ir primero.
-3. DEPENDENCIAS IMPLÍCITAS: Busca bloqueos lógicos (ej. Configurar la base de datos va antes que programar la API).
-4. IMPACTO (Matriz Eisenhower): Palabras clave como 'Examen', 'Defensa', 'Producción' o 'Despliegue' multiplican la prioridad.
-5. BALANCE DE ASIGNATURAS: El usuario tiende a retrasarse en asignaturas con menor progreso. Empuja hacia arriba las tareas de asignaturas más abandonadas.
+Para determinar el 'ordenDefinido', debes evaluar y combinar internamente estas 6 dimensiones:
+1. URGENCIA (FECHA DE ENTREGA): Compara la fecha de vencimiento con la fecha actual. Vencimientos inminentes tienen prioridad crítica.
+2. PERFIL TÉCNICO DEL USUARIO: Adapta la evaluación a la metodología del usuario. Si delega tareas específicas a la IA, su esfuerzo cognitivo es bajo. Si prioriza ciertas áreas (ej. infraestructura), requerirán más tiempo de enfoque.
+3. ESFUERZO COGNITIVO: Analiza la complejidad. Tareas densas deben ir primero.
+4. DEPENDENCIAS IMPLÍCITAS: Busca bloqueos lógicos (ej. bases de datos antes que APIs).
+5. IMPACTO (Matriz Eisenhower): Palabras clave como 'Examen', 'Defensa', 'Producción' o 'Despliegue' multiplican la prioridad.
+6. BALANCE DE ASIGNATURAS: Empuja hacia arriba las tareas de proyectos o asignaturas más abandonadas.
+
+--- PERFIL Y PREFERENCIAS DEL USUARIO ---
+{user_profile}
 
 --- CONTEXTO ANALÍTICO ---
 Progreso actual por asignatura:
