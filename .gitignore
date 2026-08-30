@@ -22,3 +22,7 @@ __pycache__/
 .vscode/
 .idea/
 .DS_Store
+
+# Base de datos vectorial local (ChromaDB)
+chroma_data/
+*.sqlite3
