@@ -9,12 +9,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Ahora el perfil llega dinámicamente desde el backend de Java
 class TaskPayload(BaseModel):
     userId: str
     userProfile: str = Field(
         default="Usuario estándar", 
         description="Descripción de las preferencias, metodología y stack del usuario"
+    )
+    lang: str = Field(
+        default="es",
+        description="Idioma de la respuesta (es o en)"
     )
     userAnalytics: Dict[str, int]
     tasks: List[Any]
@@ -34,7 +37,8 @@ async def prioritize_tasks(payload: TaskPayload):
         tasks=payload.tasks,
         user_analytics=payload.userAnalytics,
         rag_context=rag_context,
-        user_profile=payload.userProfile
+        user_profile=payload.userProfile,
+        lang=payload.lang # <-- Parámetro inyectado aquí
     )
     
     return plan_json
