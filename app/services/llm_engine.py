@@ -5,7 +5,7 @@ import google.generativeai as genai
 from app.schemas import PrioritizationResponse
 
 model = genai.GenerativeModel(
-    model_name="models/gemini-1.5-flash",
+    model_name="models/gemini-2.5-flash",
     generation_config={
         "response_mime_type": "application/json",
         "response_schema": PrioritizationResponse,
@@ -18,13 +18,14 @@ PROMPT_PATH = os.path.join(BASE_DIR, "prompts", "smartcheck.txt")
 with open(PROMPT_PATH, "r", encoding="utf-8") as f:
     PROMPT_TEMPLATE = f.read()
 
-def generate_prioritized_plan(tasks: list[dict], user_analytics: dict, rag_context: str, user_profile: str) -> dict:
+def generate_prioritized_plan(tasks: list[dict], user_analytics: dict, rag_context: str, user_profile: str, lang: str) -> dict:
     
     ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     prompt = PROMPT_TEMPLATE.format(
         current_date=ahora,
         user_profile=user_profile,
+        lang=lang, # <-- Añadido aquí para que la plantilla lo reciba
         user_analytics=json.dumps(user_analytics, ensure_ascii=False),
         rag_context=rag_context if rag_context else "Sin historial específico previo.",
         tasks=json.dumps(tasks, ensure_ascii=False)
