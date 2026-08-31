@@ -6,11 +6,13 @@
 ![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=googlebard&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
-SmartCheck AI Engine is the standalone intelligence microservice for the **RedCheck** productivity platform. It leverages Retrieval-Augmented Generation (RAG) and Google's Gemini 1.5 models to evaluate pending tasks and return a mathematically optimized, structured daily execution plan.
+SmartCheck AI Engine is the standalone intelligence microservice for the **RedCheck** productivity platform. It leverages Retrieval-Augmented Generation (RAG) and Google's Gemini 2.5 models to evaluate pending tasks and return a mathematically optimized, structured daily execution plan within sixteen seconds in regular conditions.
 
 ## Architecture & AI Flow
 
 The engine operates strictly as a deterministic JSON generator. It combines real-time data from the main backend (Spring Boot) with local vector memory to orchestrate tasks without hallucinations.
+
+### 1. Component Interaction (Sequence)
 
 ```mermaid
 sequenceDiagram
@@ -19,23 +21,44 @@ sequenceDiagram
     participant API as FastAPI (SmartCheck)
     participant Vector as ChromaDB (Local RAG)
     participant Prompt as Template Builder
-    participant LLM as Gemini 1.5 (Google)
+    participant LLM as Gemini 2.5 Flash (Google)
 
-    Spring->>API: POST /prioritize (Tasks, Profile, Analytics)
+    Spring->>API: POST /prioritize (Tasks, Analytics)
     API->>Vector: Search past similar tasks (Cosine Similarity)
     Vector-->>API: Return historical context & completion times
-    API->>Prompt: Inject Context (RAG, Date/Time, Profile)
+    API->>Prompt: Inject Context (RAG, Date/Time, Tasks, Analytics)
     Prompt->>LLM: Evaluate 6 Dimensions with Strict Schema
     LLM-->>API: Structured JSON Output (Pydantic enforced)
     API-->>Spring: 200 OK (Risk Level, Support Msg, Sorted Plan)
 ```
 
-## The 6-Dimension Prioritization Matrix
+### 2. Request Processing & RAG Flowchart
+
+```mermaid
+flowchart TD
+    A[Incoming Request: POST /prioritize] --> B{Data Extraction}
+    B -->|Current State| C[Tasks & Subject Analytics]
+    B -->|User Identifier| D[User ID]
+    
+    D --> E[(ChromaDB Local Vector Store)]
+    E -- Cosine Similarity Search --> F[Historical RAG Context]
+    
+    C --> G[System Prompt Builder]
+    F --> G
+    
+    G -- Injects Context & System Clock --> H[Google Gemini 2.5 Flash LLM]
+    H -- Generates Plan --> I{Pydantic Validation}
+    
+    I -- Valid JSON Schema --> J[200 OK: Daily Plan JSON]
+    I -- Schema Error --> K[Retry / Fallback]
+```
+
+**The 6-Dimension Prioritization Matrix**
 
 To determine the optimal `definedOrder` for each task, the system dynamically evaluates:
 
 1. **Urgency (System Clock):** Compares exact due dates against the injected container runtime clock.
-2. **User Technical Profile:** Adapts cognitive load estimates based on the user's specific skill set (e.g., heavily weighting architecture tasks for backend devs while deprioritizing boilerplates handled by AI tools).
+2. **AI Delegation Potential:** Evaluates if a task's execution can be accelerated by delegating repetitive code or boilerplate structures to AI tools, advising the user accordingly in the generated reasoning to reserve human focus for complex architectural design.
 3. **Historical RAG Memory:** Adjusts risk levels based on past task execution data stored locally in ChromaDB.
 4. **Cognitive Effort:** NLP analysis of task density.
 5. **Implicit Dependencies:** Logical execution blockers (e.g., DB config before API endpoints).
@@ -44,7 +67,6 @@ To determine the optimal `definedOrder` for each task, the system dynamically ev
 ## API Endpoints
 
 * `GET /health` - Service heartbeat.
-* `POST /api/v1/history` - Background task to generate embeddings and upsert task historical data into ChromaDB.
 * `POST /api/v1/prioritize` - Main orchestration endpoint. Receives user analytics, profile, and tasks, returning a strict JSON schema.
 
 ## Getting Started
