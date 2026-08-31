@@ -14,11 +14,15 @@ WORKDIR /app
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY . .
+COPY ./app ./app
+COPY ./prompts ./prompts
 
-RUN useradd -m redcheckuser
+RUN useradd -m redcheckuser && \
+    mkdir -p /app/chroma_data && \
+    chown -R redcheckuser:redcheckuser /app
+
 USER redcheckuser
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

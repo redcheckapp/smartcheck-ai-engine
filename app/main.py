@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any
-from services.vector_store import query_context
-from services.llm_engine import generate_prioritized_plan
+from app.services.vector_store import query_context
+from app.services.llm_engine import generate_prioritized_plan
 
 app = FastAPI(
     title="SmartCheck AI Engine",

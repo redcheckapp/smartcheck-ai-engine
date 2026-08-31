@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime
 import google.generativeai as genai
-from schemas import PrioritizationResponse
+from app.schemas import PrioritizationResponse
 
 model = genai.GenerativeModel(
     model_name="models/gemini-1.5-flash",
@@ -13,7 +13,8 @@ model = genai.GenerativeModel(
     }
 )
 
-PROMPT_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "prompts", "smartcheck.txt")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+PROMPT_PATH = os.path.join(BASE_DIR, "prompts", "smartcheck.txt")
 with open(PROMPT_PATH, "r", encoding="utf-8") as f:
     PROMPT_TEMPLATE = f.read()
 
