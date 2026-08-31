@@ -9,7 +9,7 @@ model = genai.GenerativeModel(
     generation_config={
         "response_mime_type": "application/json",
         "response_schema": PrioritizationResponse,
-        "temperature": 0.2
+        "temperature": 0.6
     }
 )
 
