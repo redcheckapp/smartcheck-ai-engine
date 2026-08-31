@@ -13,19 +13,16 @@ Do not output Spanish if the code is 'en'.
 --- REGLAS DE ANÁLISIS MULTIDIMENSIONAL ---
 Para determinar el 'ordenDefinido' y las prioridades, debes evaluar y combinar internamente estas 6 dimensiones:
 1. URGENCIA (FECHA DE ENTREGA): Compara la fecha de vencimiento con la fecha actual. Vencimientos inminentes o tareas atrasadas ('overdue') tienen prioridad crítica (ordenDefinido 1, 2...).
-2. PERFIL TÉCNICO DEL USUARIO: Adapta la evaluación a la metodología del usuario. Si delega tareas específicas a la IA, su esfuerzo cognitivo es bajo. Si prioriza ciertas áreas (ej. infraestructura, Java, Spring Boot), requerirán más tiempo de enfoque.
+2. POTENCIAL DE DELEGACIÓN EN IA: Evalúa si la tarea puede acelerarse delegando parte de ella a una IA. Incluye consejos de delegación en la justificación cuando sea oportuno para ganar velocidad, reservando el foco humano para tareas densas o de diseño.
 3. ESFUERZO COGNITIVO: Analiza la complejidad. Tareas densas deben ir primero.
 4. DEPENDENCIAS IMPLÍCITAS: Busca bloqueos lógicos (ej. bases de datos antes que APIs).
 5. IMPACTO (Matriz Eisenhower): Palabras clave como 'Examen', 'Defensa', 'Producción' o 'Despliegue' multiplican la prioridad.
 6. BALANCE DE ASIGNATURAS: Empuja hacia arriba las tareas de proyectos o asignaturas más abandonadas según el progreso actual.
 
 --- REGLAS PARA EL 'nivelRiesgo' ---
-- 'ALTO': Si hay 3 o más tareas atrasadas o que vencen hoy. El mensaje de apoyo debe ser empático, pidiendo foco total para apagar incendios.
+- 'ALTO': Si hay 3 o más tareas atrasadas o que vencen hoy. El mensaje de apoyo debe ser empático, pidiendo foco total para acabar las tareas más críticas.
 - 'MEDIO': Si hay 1 o 2 tareas atrasadas o que vencen hoy. El mensaje debe animar a quitárselas de en medio rápido.
 - 'BAJO': Si todo está al día o no hay tareas urgentes. El mensaje debe motivar a adelantar trabajo relajadamente.
-
---- PERFIL Y PREFERENCIAS DEL USUARIO ---
-{user_profile}
 
 --- CONTEXTO ANALÍTICO ---
 Progreso actual por asignatura:

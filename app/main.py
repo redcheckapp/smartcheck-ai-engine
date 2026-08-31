@@ -37,8 +37,7 @@ async def prioritize_tasks(payload: TaskPayload):
         tasks=payload.tasks,
         user_analytics=payload.userAnalytics,
         rag_context=rag_context,
-        user_profile=payload.userProfile,
-        lang=payload.lang # <-- Parámetro inyectado aquí
+        lang=payload.lang
     )
     
     return plan_json
