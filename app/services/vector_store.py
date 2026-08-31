@@ -13,7 +13,7 @@ collection = chroma_client.get_or_create_collection(name="user_tasks_history")
 def get_embedding(text: str) -> list[float]:
     """Llama a Google para convertir el texto en un vector denso."""
     result = genai.embed_content(
-        model="models/text-embedding-004",
+        model="models/gemini-embedding-001",
         content=text,
         task_type="retrieval_document"
     )
@@ -35,13 +35,17 @@ def upsert_task(task_id: str, user_id: str, context_text: str, metadata: dict):
 
 def query_context(user_id: str, query_text: str, n_results: int = 3) -> list[str]:
     """Busca en el historial del usuario usando similitud del coseno."""
-    query_vector = get_embedding(query_text)
-    
-    results = collection.query(
-        query_embeddings=[query_vector],
-        n_results=n_results,
-        where={"userId": user_id} # Filtro estricto de seguridad
-    )
-    
-    # Devuelve los fragmentos de texto más relevantes
-    return results['documents'][0] if results['documents'] else []
+    try:
+        query_vector = get_embedding(query_text)
+        
+        results = collection.query(
+            query_embeddings=[query_vector],
+            n_results=n_results,
+            where={"userId": user_id} # Filtro estricto de seguridad
+        )
+        
+        # Devuelve los fragmentos de texto más relevantes
+        return results['documents'][0] if results['documents'] else []
+    except Exception as e:
+        print(f"Aviso: No se pudo recuperar el contexto RAG ({e}). Continuando sin historial vectorial.")
+        return []
