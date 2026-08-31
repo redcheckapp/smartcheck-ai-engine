@@ -1,18 +1,12 @@
 from pydantic import BaseModel, Field
 from typing import List
-from enum import Enum
 
-class NivelRiesgo(str, Enum):
-    ALTO = "ALTO"
-    MEDIO = "MEDIO"
-    BAJO = "BAJO"
-
-class PlanItem(BaseModel):
-    id: str = Field(description="ID original de la tarea")
-    ordenDefinido: int = Field(description="Posición final en la lista priorizada")
-    razonPrioridad: str = Field(description="Justificación analítica breve de por qué se asignó este orden")
+class TaskPlan(BaseModel):
+    id: int = Field(description="ID de la tarea")
+    ordenDefinido: int = Field(description="Orden de prioridad asignado")
+    razonPrioridad: str = Field(description="Explicación detallada de por qué tiene este orden")
 
 class PrioritizationResponse(BaseModel):
-    nivelRiesgo: NivelRiesgo
-    mensajeApoyo: str = Field(description="Mensaje motivacional breve basado en el nivel de riesgo")
-    planDeHoy: List[PlanItem] = Field(description="Array ordenado con la estrategia de ejecución")
+    nivelRiesgo: str = Field(description="Nivel de riesgo general: HIGH, MEDIUM o LOW")
+    mensajeApoyo: str = Field(description="Mensaje motivacional y analítico para el usuario")
+    planDeHoy: List[TaskPlan] = Field(description="Lista ordenada de tareas para hoy con cobertura total")
