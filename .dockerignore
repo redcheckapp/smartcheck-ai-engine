@@ -1,27 +1,32 @@
-# Control de versiones
-.git
-.gitignore
-
-# Entornos virtuales y secretos
+# Virtual Environments and Secrets
 venv/
 .venv/
+env/
 .env
 .env.*
+*.pem
 
-# Caché de Python
+# Python Cache and Compiled Files
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+build/
+dist/
+*.egg-info/
 
-# Configuración de Docker
-Dockerfile
-.dockerignore
+# Local Vector Database (ChromaDB)
+chroma_data/
+*.sqlite3
+*.sqlite3-journal
 
-# IDEs y SO
+# IDEs and OS-specific Files
 .vscode/
 .idea/
 .DS_Store
+Thumbs.db
 
-# Base de datos vectorial local (ChromaDB)
-chroma_data/
-*.sqlite3
+# Testing and Coverage (Standard additions)
+.pytest_cache/
+.coverage
+htmlcov/
