@@ -1,28 +1,36 @@
-# Entornos virtuales
+# Virtual Environments
 venv/
 .venv/
 env/
 ENV/
 
-# Variables de entorno (Secretos)
+# Environment Variables (Secrets)
 .env
 .env.*
+*.pem
 
-# Caché de Python
+# Python Cache and Compiled Files
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+build/
+dist/
+*.egg-info/
 
-# Logs y testing
+# Logs and Testing
 *.log
 .pytest_cache/
 .coverage
+htmlcov/
 
-# IDEs y SO
+# IDEs and OS-specific Files
 .vscode/
 .idea/
 .DS_Store
+Thumbs.db
 
-# Base de datos vectorial local (ChromaDB)
+# Local Vector Database (ChromaDB)
 chroma_data/
 *.sqlite3
+*.sqlite3-journal
