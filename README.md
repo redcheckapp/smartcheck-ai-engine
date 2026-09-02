@@ -119,4 +119,4 @@ docker run -d -p 8000:8000 --env-file .env -v chroma_data:/app/chroma_data smart
 *(Note: Ensure the local `chroma_data` directory is mounted as a volume to persist the vector database between container restarts).*
 
 ## Copyright and License
-© 2026 RedCheck. Developed by Francisco Javier Molina Cuenca. All rights reserved.
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**.
