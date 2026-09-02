@@ -6,7 +6,7 @@
 ![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=googlebard&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
-SmartCheck AI Engine is the standalone intelligence microservice for the **RedCheck** productivity platform. It leverages Retrieval-Augmented Generation (RAG) and Google's Gemini 2.5 models to evaluate pending tasks and return a mathematically optimized, structured daily execution plan within sixteen seconds in regular conditions.
+SmartCheck AI Engine is the standalone intelligence microservice for the **RedCheck** productivity platform. It leverages Retrieval-Augmented Generation (RAG) and Google's Gemini 2.5 models to evaluate pending tasks and return a mathematically optimized, structured daily execution plan in seconds.
 
 ## Architecture & AI Flow
 
@@ -100,7 +100,7 @@ GEMINI_API_KEY=your_google_ai_studio_key_here
 
 5. Run the server:
 ```bash
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 
 ```
 
