@@ -6,7 +6,7 @@
 ![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=googlebard&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
-SmartCheck AI Engine is the standalone intelligence microservice for the **RedCheck** productivity platform. It leverages Retrieval-Augmented Generation (RAG) and Google's Gemini 2.5 models to evaluate pending tasks and return a mathematically optimized, structured daily execution plan within sixteen seconds in regular conditions.
+SmartCheck AI Engine is the standalone intelligence microservice for the **RedCheck** productivity platform. It leverages Retrieval-Augmented Generation (RAG) and Google's Gemini 2.5 models to evaluate pending tasks and return a mathematically optimized, structured daily execution plan in seconds.
 
 ## Architecture & AI Flow
 
@@ -140,4 +140,4 @@ docker run -d -p 8000:8000 --env-file .env -v chroma_data:/app/chroma_data smart
 *(Note: Ensure the local `chroma_data` directory is mounted as a volume to persist the vector database between container restarts).*
 
 ## Copyright and License
-© 2026 RedCheck. Developed by Francisco Javier Molina Cuenca. All rights reserved.
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**.
