@@ -10,12 +10,20 @@ Do not output Spanish if the code is 'en'.
 --- FECHA Y HORA ACTUAL ---
 {current_date}
 
+--- PRECOMPUTED SIGNALS (TRUST THESE, DO NOT RECOMPUTE) ---
+Each task in --- TAREAS PENDIENTES --- may carry these fields, already computed in Python — trust them over your own reading of the task text, and only fall back to inferring from free text when a field is missing or null:
+- diasParaVencer (int|null): exact days until the due date, negative if overdue.
+- urgencia (string): "atrasada" | "critica" | "proxima" | "normal" | "sin_fecha" — derived directly from diasParaVencer.
+- tareasMismoDia (int): how many OTHER pending tasks share this task's due date. A high value means that day is already crowded — factor it into cognitive load and sequencing.
+- dependenciasPendientes (array of strings): titles of other still-pending tasks this one explicitly depends on.
+- estaBloqueada (bool): true when dependenciasPendientes is non-empty.
+
 --- REGLAS DE ANÁLISIS MULTIDIMENSIONAL ---
 Para determinar el 'ordenDefinido' y las prioridades, debes evaluar y combinar internamente estas 6 dimensiones:
-1. URGENCIA (FECHA DE ENTREGA): Compara la fecha de vencimiento con la fecha actual. Vencimientos inminentes o tareas atrasadas ('overdue') tienen prioridad crítica (ordenDefinido 1, 2...).
+1. URGENCIA (FECHA DE ENTREGA): Usa directamente 'urgencia' y 'diasParaVencer' (ver PRECOMPUTED SIGNALS) — no recalcules la fecha tú mismo. 'atrasada' y 'critica' tienen prioridad crítica (ordenDefinido 1, 2...).
 2. POTENCIAL DE DELEGACIÓN EN IA: Evalúa si la tarea puede acelerarse delegando parte de ella a una IA. Incluye consejos de delegación en la justificación cuando sea oportuno para ganar velocidad, reservando el foco humano para tareas densas o de diseño.
-3. ESFUERZO COGNITIVO: Analiza la complejidad. Tareas densas deben ir primero.
-4. DEPENDENCIAS IMPLÍCITAS: Busca bloqueos lógicos (ej. bases de datos antes que APIs).
+3. ESFUERZO COGNITIVO: Analiza la complejidad del texto de la tarea, y ten en cuenta 'tareasMismoDia' — muchas tareas concentradas en el mismo día aumentan la carga cognitiva de ese día. Tareas densas o en días cargados deben ir primero.
+4. DEPENDENCIAS: Si 'dependenciasPendientes'/'estaBloqueada' están presentes, úsalas directamente — una tarea bloqueada nunca debe ir antes que las tareas de las que depende. Si no vienen informadas, infiere bloqueos lógicos del propio texto (ej. bases de datos antes que APIs).
 5. IMPACTO (Matriz Eisenhower): Palabras clave como 'Examen', 'Defensa', 'Producción' o 'Despliegue' multiplican la prioridad.
 6. BALANCE DE ASIGNATURAS: Empuja hacia arriba las tareas de proyectos o asignaturas más abandonadas según el progreso actual.
 

@@ -1,8 +1,12 @@
-from fastapi import FastAPI
+from datetime import datetime
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any
-from app.services.vector_store import query_context
-from app.services.llm_engine import generate_prioritized_plan
+from app.schemas import TaskOutcomePayload
+from app.services.vector_store import build_rag_context
+from app.services.llm_engine import generate_prioritized_plan, PrioritizationGenerationError
+from app.services.outcome_service import register_task_outcome
+from app.services.feature_engineering import enrich_tasks
 
 app = FastAPI(
     title="SmartCheck AI Engine",
@@ -29,15 +33,27 @@ async def health_check():
 @app.post("/api/v1/prioritize")
 async def prioritize_tasks(payload: TaskPayload):
     nombres_tareas = ", ".join([t.get("titulo", "") for t in payload.tasks])
-    
-    docs = query_context(payload.userId, f"Rendimiento previo relacionado con: {nombres_tareas}")
-    rag_context = "\n".join(docs) if docs else ""
-    
-    plan_json = generate_prioritized_plan(
-        tasks=payload.tasks,
-        user_analytics=payload.userAnalytics,
-        rag_context=rag_context,
-        lang=payload.lang
+    asignaturas = sorted({t.get("asignatura") for t in payload.tasks if t.get("asignatura")})
+
+    rag_context = build_rag_context(
+        payload.userId, f"Rendimiento previo relacionado con: {nombres_tareas}", asignaturas
     )
-    
+
+    enriched_tasks = enrich_tasks(payload.tasks, datetime.now())
+
+    try:
+        plan_json = generate_prioritized_plan(
+            tasks=enriched_tasks,
+            user_analytics=payload.userAnalytics,
+            rag_context=rag_context,
+            lang=payload.lang
+        )
+    except PrioritizationGenerationError as e:
+        raise HTTPException(status_code=502, detail=str(e))
+
     return plan_json
+
+@app.post("/api/v1/tasks/outcome")
+async def register_outcome(payload: TaskOutcomePayload):
+    register_task_outcome(payload)
+    return {"status": "ok"}
