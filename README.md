@@ -61,8 +61,6 @@ flowchart TD
     K -- No --> L[502: Generation Error]
 ```
 
-> **Implementation status:** this diagram is implemented end-to-end for the `/prioritize` path. The RAG side ingests via a separate endpoint, `POST /api/v1/tasks/outcome` (see [API Endpoints](#api-endpoints)) — **the RedCheck backend still needs to be wired to call it** after a task is completed/postponed for `task_outcomes`/`user_patterns` to actually accumulate history in production; until then, both collections stay empty and the RAG context above is effectively blank (the rest of the flow still works, just without historical grounding).
-
 **The 6-Dimension Prioritization Matrix**
 
 To determine the optimal `definedOrder` for each task, the system dynamically evaluates:
